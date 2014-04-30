@@ -10,6 +10,8 @@ libwebclient_SOURCES = \
 	libwebclient/digest/md5.rs \
 	libwebclient/digest/mod.rs \
 	libwebclient/digest/sha1.rs \
+	libwebclient/digest/sha2.rs \
+	libwebclient/digest/sha3.rs \
 	libwebclient/lib.rs
 
 libwebclient.stamp: $(libwebclient_SOURCES)

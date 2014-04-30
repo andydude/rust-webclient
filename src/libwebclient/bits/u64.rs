@@ -1,3 +1,74 @@
+//use std::slice;
+
+pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+    // FIPS-180-4 SS 6.1.1.2 message is padded
+    let mut ret = Vec::new();
+    for i in range(0, msg.len()) {
+        ret.push(msg[i]);
+    }
+
+    // primarily for implementing MD5
+    ret.push(bit);
+    for _ in range(0, (55 - length) % 64) {
+        ret.push(0u8);
+    }
+
+    // big-endian u64 size
+    let pad = to_le((length as u64)*8);
+    for i in range(0, pad.len()) {
+        ret.push(pad[i]);
+    }
+    ret.as_slice().to_owned()
+}
+
+//pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+//    let mut ret: ~[u8] = msg.clone().to_owned();
+//    slice::append(ret, msg);
+//    slice::append_one(ret, bit);
+//    for _ in range(0, (55 - length) % 64) {
+//        slice::append_one(ret, 0u8);
+//    }
+//    slice::append(ret, to_le((length as u64)*8));
+//    ret
+//}
+
+//pub fn pad_be_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+//    // FIPS-180-4 SS 6.1.1.2 message is padded
+//    let ret = Vec::new();
+//    ret.push_bytes(msg);
+//
+//    // primarily for implementing MD5
+//    ret.push_bytes(~[bit]);
+//    for _ in range(0, (55 - length) % 64) {
+//        ret.push_bytes(~[0u8]);
+//    }
+//
+//    // big-endian u64 size
+//    let pad = to_be((length as u64)*8);
+//    ret.push_bytes(pad);
+//}
+//
+//pub fn pad_be_128(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+//    // FIPS-180-4 SS 6.1.1.2 message is padded
+//    let ret = Vec::new();
+//    ret.push_bytes(msg);
+//
+//    // FIPS-180-4 SS 6.2.1.2 message is padded
+//    ret.push_bytes(~[bit]);
+//    for _ in range(0, (111 - length) % 128) {
+//        ret.push_bytes(~[0u8]);
+//    }
+//
+//    // most significant u64 of the u128 size
+//    for _ in range(0u, 8u) {
+//        ret.push_bytes(~[0u8]);
+//    }
+//
+//    // least significant u64 of the u128 size
+//    let pad = to_be((length as u64)*8);
+//    ret.push_bytes(pad);
+//}
+
 
 pub fn rotl(x: u64, y: uint) -> u64 {
     return (x << y) | (x >> (64 - y));
