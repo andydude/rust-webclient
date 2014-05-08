@@ -770,7 +770,7 @@ impl HashAlgorithm for SHA512 {
         self.state = sha512_begin();
     }
 
-	fn hash_block(&mut self, msg_block: &[u8]) {
+    fn hash_block(&mut self, msg_block: &[u8]) {
         sha512_update(self.state, msg_block);
     }
 

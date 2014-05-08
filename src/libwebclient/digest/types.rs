@@ -2,33 +2,16 @@
 pub trait HashAlgorithm {
 
     // must impl
-    fn get_iv(&self) -> ~[u8];
-
-    // must impl
-    fn get_hash(&self) -> ~[u8];
-
-    // must impl
-    fn get_hash_size(&self) -> uint;
-
-    // must impl
-    fn get_block_size(&self) -> uint;
-
-    // must impl
-    fn get_message_size(&self) -> uint;
-
-    // must impl
-    fn set_message_size(&mut self, msg_size: uint);
-
-    // must impl
 	fn clear(&mut self);
-
-    // must impl
+    fn get_block_size(&self) -> uint;
+    fn get_hash(&self) -> ~[u8];
+    fn get_hash_size(&self) -> uint;
+    fn get_iv(&self) -> ~[u8];
+    fn get_message_size(&self) -> uint;
+    fn set_message_size(&mut self, msg_size: uint);
 	fn hash_block(&mut self, msg_block: &[u8]);
-
-    // must impl
 	fn hash_last_block(&mut self, msg_piece: &[u8]);
 
-	//fn hash(&mut self, msg: &[u8]) -> ~[u8];
     fn hash(&mut self, msg: &[u8]) -> ~[u8] {
         self.clear();
 

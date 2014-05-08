@@ -60,7 +60,7 @@ pub fn pad_be_128(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
         ret.push(msg[i]);
     }
 
-    // primarily for implementing SHA1
+    // primarily for implementing SHA512
     ret.push(bit);
     for _ in range(0, (111 - length) % 128) {
         ret.push(0u8);
