@@ -7,8 +7,22 @@ use webclient::webclient::digest;
 use webclient::webclient::digest::types::HashAlgorithm;
 
 pub fn hash_algorithm_from_lower(name: ~str) -> Result<~HashAlgorithm, &'static str> {
-    return if name == ~"-md5" {
+    if name == ~"-md5" {
         Ok(digest::md5::md5_new())
+    } else if name == ~"-sha1" {
+        Ok(digest::sha1::sha1_new())
+    } else if name == ~"-sha224" {
+        Ok(digest::sha2::sha224_new())
+    } else if name == ~"-sha256" {
+        Ok(digest::sha2::sha256_new())
+    } else if name == ~"-sha384" {
+        Ok(digest::sha2::sha384_new())
+    } else if name == ~"-sha512" {
+        Ok(digest::sha2::sha512_new())
+    } else if name == ~"-sha512224" {
+        Ok(digest::sha2::sha512224_new())
+    } else if name == ~"-sha512256" {
+        Ok(digest::sha2::sha512256_new())
     } else {
         Err("invalid hash algorithm")
     }

@@ -20,6 +20,9 @@ libwebclient.stamp: $(libwebclient_SOURCES)
 dgst: dgst.rs
 	$(RUSTC) $(RUSTARGS) dgst.rs
 
+test:
+	$(RUSTC) $(RUSTARGS) --test libwebclient/lib.rs
+
 clean:
 	rm -f libwebclient-*.dylib
 	rm -f libwebclient-*.rlib

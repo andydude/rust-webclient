@@ -1,3 +1,4 @@
+use std::slice;
 
 #[inline]
 pub fn rotl(x: u32, y: uint) -> u32 {
@@ -51,6 +52,55 @@ pub fn to_le(x: u32) -> ~[u8] {
              ((x >> 16)&0xff) as u8,
              ((x >> 24)&0xff) as u8];
 }
+
+#[inline]
+pub fn from_le_v(v: &[u8]) -> ~[u32] {
+    let mut ret = slice::with_capacity(v.len()/4);
+    for byteslice in v.chunks(4) {
+        let word = from_le(byteslice);
+        ret.push(word);
+    }
+    ret
+}
+
+#[inline]
+pub fn from_be_v(v: &[u8]) -> ~[u32] {
+    let mut ret = slice::with_capacity(v.len()/4);
+    for byteslice in v.chunks(4) {
+        let word = from_be(byteslice);
+        ret.push(word);
+    }
+    ret
+}
+
+#[inline]
+pub fn to_be_v(x: &[u32]) -> ~[u8] {
+    let mut ret = slice::with_capacity(x.len()*4);
+    for word_i in range(0u, x.len()) {
+        let word = x[word_i];
+        let byteslice = to_be(word);
+        for byte_i in range(0u, 4u) {
+            let byte = byteslice[byte_i];
+            ret.push(byte);
+        }
+    }
+    ret
+}
+
+#[inline]
+pub fn to_le_v(x: &[u32]) -> ~[u8] {
+    let mut ret = slice::with_capacity(x.len()*4);
+    for word_i in range(0u, x.len()) {
+        let word = x[word_i];
+        let byteslice = to_le(word);
+        for byte_i in range(0u, 4u) {
+            let byte = byteslice[byte_i];
+            ret.push(byte);
+        }
+    }
+    ret
+}
+
 
 //pub fn bytes_as_le_u32(v: &[u8]) -> u32 {
 //    return v[3] as u32 << 24 

@@ -2,114 +2,6 @@ use webclient::bits::u32;
 use webclient::bits::u64;
 use webclient::digest::types::HashAlgorithm;
 
-//::{bool3ary_57, bool3ary_150, bool3ary_202, bool3ary_228};
-
-/*
- * MD5, (RFC 1321)
- * 
- * 
- */
-
-///*
-// * ch(x,y,z)
-// *
-// * MD5 calls this function f,
-// * SHA1 calls this function ch.
-// *
-// * boolean operator number 202
-// */
-//fn ch(x: u32, y: u32, z: u32) -> u32 {
-//    //return ((x)&(y)) | ((!x)&(z));
-//    return z ^ (x & (y ^ z));
-//}
-//
-///*
-// * boolean operator number 57
-// */
-//fn fi(x: u32, y: u32, z: u32) -> u32 {
-//    //return !((x & z) ^ y ^ z)
-//    return y ^ (x | (!z));
-//}
-//
-//fn parity(x: u32, y: u32, z: u32) -> u32 {
-//    return x ^ y ^ z;
-//}
-//
-//fn rotl(x: u32, y: uint) -> u32 {
-//    return (x << y) | (x >> (32 - y));
-//}
-//
-//fn bytes_as_le_u32(v: &[u8]) -> u32 {
-//    return v[3] as u32 << 24 
-//         | v[2] as u32 << 16 
-//         | v[1] as u32 << 8 
-//         | v[0] as u32;
-//}
-//
-////fn bytes_as_be_u32(v: &[u8]) -> u32 {
-////    return v[0] as u32 << 24 
-////         | v[1] as u32 << 16 
-////         | v[2] as u32 << 8 
-////         | v[3] as u32;
-////}
-//
-////fn be_u32_as_bytes(x: u32) -> ~[u8] {
-////    return ~[((x >> 24)&0xff) as u8,
-////             ((x >> 16)&0xff) as u8,
-////             ((x >> 8)&0xff) as u8,
-////             (x&0xff) as u8];
-////}
-//
-////fn be_u64_as_bytes(x: u64) -> ~[u8] {
-////    return ~[((x >> 56)&0xff) as u8,
-////             ((x >> 48)&0xff) as u8,
-////             ((x >> 40)&0xff) as u8,
-////             ((x >> 32)&0xff) as u8,
-////             ((x >> 24)&0xff) as u8,
-////             ((x >> 16)&0xff) as u8,
-////             ((x >> 8)&0xff) as u8,
-////             (x&0xff) as u8];
-////}
-//
-//fn le_u32_as_bytes(x: u32) -> ~[u8] {
-//    return ~[((x)&0xff) as u8,
-//             ((x >> 8)&0xff) as u8,
-//             ((x >> 16)&0xff) as u8,
-//             ((x >> 24)&0xff) as u8];
-//}
-//
-//fn le_u64_as_bytes(x: u64) -> ~[u8] {
-//    return ~[((x)&0xff) as u8,
-//             ((x >> 8)&0xff) as u8,
-//             ((x >> 16)&0xff) as u8,
-//             ((x >> 24)&0xff) as u8,
-//             ((x >> 32)&0xff) as u8,
-//             ((x >> 40)&0xff) as u8,
-//             ((x >> 48)&0xff) as u8,
-//             ((x >> 56)&0xff) as u8];
-//}
-//
-////fn bytes_as_le_u32(v: &[u8]) -> u32 {
-////    return v[3] as u32 << 24 
-////         | v[2] as u32 << 16 
-////         | v[1] as u32 << 8 
-////         | v[0] as u32;
-////}
-////
-////fn le_u32_as_bytes(x: u32) -> ~[u8] {
-////    return ~[(x&0xff) as u8,
-////             ((x >> 8)&0xff) as u8,
-////             ((x >> 16)&0xff) as u8,
-////             ((x >> 24)&0xff) as u8];
-////}
-//
-
-//
-// BEGIN public API
-//
-
-pub static md5_block_size: uint = 64u; // in bytes
-
 pub static md5_constant_pool: [u32, .. 64] = [
     0xd76aa478u32, // digits of floor(abs(sin(1))*2^32)
     0xe8c7b756u32, // digits of floor(abs(sin(2))*2^32)
@@ -207,11 +99,10 @@ pub fn md5_update(hash: &mut[u32], m: &[u8]) {
 
     // FIPS-180-4 SS 6.1.2.1 prepare message schedule
     let mut work = [0u32, ..16];
+    let w: &mut[u32] = work.as_mut_slice();
     for t in range(0u, 16u) {
-        work[t] = u32::from_le(m.slice(4*t, 4*t+4)); 
+        w[t] = u32::from_le(m.slice(4*t, 4*t+4)); 
     }
-
-    let w = work.as_slice();
     assert!(w.len() == 16);
 
     // FIPS-180-4 SS 6.1.2.2 initialize working variables
@@ -269,90 +160,57 @@ pub fn md5_update(hash: &mut[u32], m: &[u8]) {
     hash[3] += d;
 }
 
-//pub fn md5_dump(hash: &[u32]) {
-//    for word_i in range(0u, hash.len()) {
-//        let word = hash[word_i];
-//        let byteslice = u32::to_le(word);
-//        for byte_i in range(0u, byteslice.len()) {
-//            let byte = byteslice[byte_i];
-//            print!("{:02x}", byte);
-//        }
-//    }
-//    println!("");
-//}
-
-//
-// END public API
-//
-
-//pub fn main() {
-//    let mut reader = stdin();
-//    let mut msg = reader.read_to_end().unwrap();
-//    let hash = md5_hash(&mut msg);
-//    md5_dump(hash);
-//}
-
-
 pub struct MD5 {
-	block_size: uint,
-    msg_length: uint,
+    msg_size: uint,
 	state: ~[u32]
 }
 
 impl HashAlgorithm for MD5 {
 
+    fn get_iv(&self) -> ~[u8] {
+        u32::to_le_v(md5_begin())
+    }
+
+    fn get_hash(&self) -> ~[u8] {
+        u32::to_le_v(self.state)
+    }
+
+    #[inline]
+    fn get_hash_size(&self) -> uint {
+        16
+    }
+
+    #[inline]
+    fn get_block_size(&self) -> uint {
+        64
+    }
+
+    fn get_message_size(&self) -> uint {
+        self.msg_size
+    }
+
+    fn set_message_size(&mut self, msg_size: uint) {
+        self.msg_size = msg_size;
+    }
+
     fn clear(&mut self) {
         self.state = md5_begin();
     }
 
-    fn hash(&mut self, msg: &[u8]) -> ~[u8] {
-        self.clear();
-
-        for block in msg.chunks(self.block_size) {
-            self.msg_length += block.len();
-            if self.msg_length == self.block_size {
-                self.hash_block(block);
-            } else {
-                self.hash_last_block(block);
-            }
-        }
-
-        self.get_hash()
+	fn hash_block(&mut self, msg_block: &[u8]) {
+        md5_update(self.state, msg_block);
     }
 
-    fn hash_block(&mut self, block: &[u8]) {
-        md5_update(self.state, block);
-    }
-
-    fn hash_last_block(&mut self, piece: &[u8]) {
-        let m = u64::pad_le_64(piece, 0x80u8, self.msg_length);
-        for block in m.chunks(self.block_size) {
+	fn hash_last_block(&mut self, msg_piece: &[u8]) {
+        let m = u64::pad_le_64(msg_piece, 0x80u8, self.msg_size);
+        for block in m.chunks(64) {
             self.hash_block(block);
         }
-    }
-
-    fn get_hash(&self) -> ~[u8] {
-        use std::slice;
-
-        let mut ret = slice::with_capacity(self.block_size);
-        for word_i in range(0u, self.block_size/4) {
-            let word = self.state[word_i];
-            let byteslice = u32::to_le(word);
-            for byte_i in range(0u, byteslice.len()) {
-                let byte = byteslice[byte_i];
-                ret[4*word_i + byte_i] = byte;
-            }
-        }
-        ret
     }
 }
 
 pub fn md5_new() -> ~HashAlgorithm {
-    ~MD5{
-        block_size: 64, // in bytes
-        msg_length: 0, // in bytes
-        state: md5_begin()
-    } as ~HashAlgorithm
+    ~MD5{ msg_size: 0, state: md5_begin() } as ~HashAlgorithm
 }
 
 pub fn md5_hash(msg: &[u8]) -> ~[u8] {

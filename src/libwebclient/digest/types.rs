@@ -1,10 +1,57 @@
 
 pub trait HashAlgorithm {
-	fn clear(&mut self);
-	fn hash(&mut self, msg: &[u8]) -> ~[u8];
-	fn hash_block(&mut self, block: &[u8]);
-	fn hash_last_block(&mut self, piece: &[u8]);
+
+    // must impl
+    fn get_iv(&self) -> ~[u8];
+
+    // must impl
     fn get_hash(&self) -> ~[u8];
+
+    // must impl
+    fn get_hash_size(&self) -> uint;
+
+    // must impl
+    fn get_block_size(&self) -> uint;
+
+    // must impl
+    fn get_message_size(&self) -> uint;
+
+    // must impl
+    fn set_message_size(&mut self, msg_size: uint);
+
+    // must impl
+	fn clear(&mut self);
+
+    // must impl
+	fn hash_block(&mut self, msg_block: &[u8]);
+
+    // must impl
+	fn hash_last_block(&mut self, msg_piece: &[u8]);
+
+	//fn hash(&mut self, msg: &[u8]) -> ~[u8];
+    fn hash(&mut self, msg: &[u8]) -> ~[u8] {
+        self.clear();
+
+        let mut last_block: &[u8] = [];
+        let bsize = self.get_block_size();
+        for block in msg.chunks(bsize) {
+            let msize = self.get_message_size();
+            let csize = block.len();
+
+            // increment message size
+            self.set_message_size(msize + csize);
+
+            // perform hash on a block
+            if csize == bsize {
+                self.hash_block(block);
+            } else {
+                last_block = block;
+            }
+        }
+        self.hash_last_block(last_block);
+
+        self.get_hash()
+    }
 }
 
 // usage: let hash_bytes = hash(msg_bytes).get_hash()
