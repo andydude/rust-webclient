@@ -719,6 +719,7 @@ impl HashAlgorithm for SHA384 {
 
     fn hash_last_block(&mut self, msg_piece: &[u8]) {
         let m = u64::pad_be_128(msg_piece, 0x80u8, self.msg_size);
+        assert!(m.len() == 128);
         for block in m.chunks(128) {
             self.hash_block(block);
         }
@@ -776,6 +777,7 @@ impl HashAlgorithm for SHA512 {
 
     fn hash_last_block(&mut self, msg_piece: &[u8]) {
         let m = u64::pad_be_128(msg_piece, 0x80u8, self.msg_size);
+        assert!(m.len() == 128);
         for block in m.chunks(128) {
             self.hash_block(block);
         }

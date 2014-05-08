@@ -40,8 +40,8 @@ fn main() {
 
     // compute hash
     let hash = hasher.hash(msg);
-    for byte in hash.iter() {
-        print!("{:02x}", *byte);
+    for byte_i in range(0u, hash.len()) {
+        print!("{:02x}", hash[byte_i]);
     }
     println!("");
 

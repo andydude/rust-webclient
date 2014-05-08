@@ -195,7 +195,7 @@ pub fn to_be_v(x: &[u64]) -> ~[u8] {
     for word_i in range(0u, x.len()) {
         let word = x[word_i];
         let byteslice = to_be(word);
-        for byte_i in range(0u, 4u) {
+        for byte_i in range(0u, 8u) {
             let byte = byteslice[byte_i];
             ret.push(byte);
         }
@@ -209,7 +209,7 @@ pub fn to_le_v(x: &[u64]) -> ~[u8] {
     for word_i in range(0u, x.len()) {
         let word = x[word_i];
         let byteslice = to_le(word);
-        for byte_i in range(0u, 4u) {
+        for byte_i in range(0u, 8u) {
             let byte = byteslice[byte_i];
             ret.push(byte);
         }
