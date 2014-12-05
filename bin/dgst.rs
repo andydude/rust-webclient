@@ -36,7 +36,7 @@ fn main() {
 
     // get hash algorithm
     let command: ~str = std::os::args()[1];
-    let mut hasher: ~HashAlgorithm = hash_algorithm_from_lower(command).unwrap();
+    let mut hasher = hash_algorithm_from_lower(command).unwrap();
 
     // compute hash
     let hash = hasher.hash(msg);
@@ -44,22 +44,4 @@ fn main() {
         print!("{:02x}", hash[byte_i]);
     }
     println!("");
-
-    //if command == ~"-md5" {
-    //    digest::md5::main()
-    //} else if command == ~"-sha1" {
-    //    digest::sha1::main()
-    //} else if command == ~"-sha224" {
-    //    digest::sha2::main_224()
-    //} else if command == ~"-sha256" {
-    //    digest::sha2::main_256()
-    //} else if command == ~"-sha384" {
-    //    digest::sha2::main_384()
-    //} else if command == ~"-sha512" {
-    //    digest::sha2::main_512()
-    //} else if command == ~"-sha512224" {
-    //    digest::sha2::main_512_224()
-    //} else if command == ~"-sha512256" {
-    //    digest::sha2::main_512_256()
-    //}
 }

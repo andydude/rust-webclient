@@ -21,9 +21,9 @@ pub static sha1_constant_pool: [u32, .. 4] = [
 	0xca62c1d6u32  // digits of floor(sqrt(10)*2^30)
 ];
 
-pub fn sha1_begin() -> ~[u32] {
+pub fn sha1_begin() -> Vec<u8> {
     // FIPS-180-4 SS 6.1.1.1 initial hash value
-    return ~[
+    return &[
         sha1_initial_hash[0],
         sha1_initial_hash[1],
         sha1_initial_hash[2],
@@ -32,7 +32,7 @@ pub fn sha1_begin() -> ~[u32] {
     ];
 }
 
-pub fn sha1_update(hash: &mut[u32], m: &[u8]) {
+pub fn sha1_update(hash: &mut[u32], m: Vec<u8>) {
     assert!(hash.len() == 5);
     assert!(m.len() == 64);
 
@@ -94,16 +94,16 @@ pub fn sha1_update(hash: &mut[u32], m: &[u8]) {
 
 pub struct SHA1 {
     msg_size: uint,
-	state: ~[u32]
+	state: Vec<u8>
 }
 
 impl HashAlgorithm for SHA1 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u32::to_be_v(sha1_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u32::to_be_v(self.state)
     }
 
@@ -129,11 +129,11 @@ impl HashAlgorithm for SHA1 {
         self.state = sha1_begin();
     }
 
-	fn hash_block(&mut self, msg_block: &[u8]) {
+	fn hash_block(&mut self, msg_block: Vec<u8>) {
         sha1_update(self.state, msg_block);
     }
 
-	fn hash_last_block(&mut self, msg_piece: &[u8]) {
+	fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_be_64(msg_piece, 0x80u8, self.msg_size);
         for block in m.chunks(64) {
             self.hash_block(block);
@@ -141,10 +141,10 @@ impl HashAlgorithm for SHA1 {
     }
 }
 
-pub fn sha1_new() -> ~HashAlgorithm {
-    ~SHA1{ msg_size: 0, state: sha1_begin() } as ~HashAlgorithm
+pub fn sha1_new() -> HashAlgorithm {
+    SHA1{ msg_size: 0, state: sha1_begin() } as HashAlgorithm
 }
 
-pub fn sha1_hash(msg: &[u8]) -> ~[u8] {
+pub fn sha1_hash(msg: Vec<u8>) -> Vec<u8> {
     sha1_new().hash(msg)
 }

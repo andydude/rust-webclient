@@ -230,10 +230,10 @@ pub static sha512_constant_pool: [u64, .. 80] = [
 // BEGIN functions
 //
 
-pub fn sha224_begin() -> ~[u32] {
+pub fn sha224_begin() -> &[u32] {
     // FIPS-180-4 SS 5.3.3 initial hash value
     // FIPS-180-4 SS 6.2.1.1 initial hash value
-    return ~[
+    return &[
         sha224_initial_hash[0],
         sha224_initial_hash[1],
         sha224_initial_hash[2],
@@ -245,10 +245,10 @@ pub fn sha224_begin() -> ~[u32] {
     ];
 }
 
-pub fn sha256_begin() -> ~[u32] {
+pub fn sha256_begin() -> &[u32] {
     // FIPS-180-4 SS 5.3.3 initial hash value
     // FIPS-180-4 SS 6.2.1.1 initial hash value
-    return ~[
+    return &[
         sha256_initial_hash[0],
         sha256_initial_hash[1],
         sha256_initial_hash[2],
@@ -273,7 +273,7 @@ pub fn sha256_begin() -> ~[u32] {
 //    }
 //}
 
-pub fn sha256_update(hash: &mut[u32], m: &[u8]) {
+pub fn sha256_update(hash: &mut[u32], m: Vec<u8>) {
     assert!(hash.len() == 8);
     assert!(m.len() == 64);
 
@@ -350,7 +350,7 @@ pub fn sha256_update(hash: &mut[u32], m: &[u8]) {
     hash[7] += h;
 }
 
-//pub fn sha224_hash(msg: &mut Vec<u8>) -> ~[u32] {
+//pub fn sha224_hash(msg: &mut Vec<u8>) -> &[u32] {
 //    let mut hash = sha224_begin();
 //
 //    sha256_pad(msg);
@@ -362,7 +362,7 @@ pub fn sha256_update(hash: &mut[u32], m: &[u8]) {
 //    return hash;
 //}
 //
-//pub fn sha256_hash(msg: &mut Vec<u8>) -> ~[u32] {
+//pub fn sha256_hash(msg: &mut Vec<u8>) -> &[u32] {
 //    let mut hash = sha256_begin();
 //
 //    sha256_pad(msg);
@@ -397,10 +397,10 @@ pub fn sha256_update(hash: &mut[u32], m: &[u8]) {
 //             hash[7]);
 //}
 
-pub fn sha384_begin() -> ~[u64] {
+pub fn sha384_begin() -> Vec<u64> {
     // FIPS-180-4 SS 5.3.3 initial hash value
     // FIPS-180-4 SS 6.2.1.1 initial hash value
-    return ~[
+    return &[
         sha384_initial_hash[0],
         sha384_initial_hash[1],
         sha384_initial_hash[2],
@@ -412,10 +412,10 @@ pub fn sha384_begin() -> ~[u64] {
     ];
 }
 
-pub fn sha512_begin() -> ~[u64] {
+pub fn sha512_begin() -> Vec<u64> {
     // FIPS-180-4 SS 5.3.3 initial hash value
     // FIPS-180-4 SS 6.2.1.1 initial hash value
-    return ~[
+    return &[
         sha512_initial_hash[0],
         sha512_initial_hash[1],
         sha512_initial_hash[2],
@@ -427,10 +427,10 @@ pub fn sha512_begin() -> ~[u64] {
     ];
 }
 
-pub fn sha512224_begin() -> ~[u64] {
+pub fn sha512224_begin() -> Vec<u64> {
     // FIPS-180-4 SS 5.3.3 initial hash value
     // FIPS-180-4 SS 6.2.1.1 initial hash value
-    return ~[
+    return &[
         sha512224_initial_hash[0],
         sha512224_initial_hash[1],
         sha512224_initial_hash[2],
@@ -442,10 +442,10 @@ pub fn sha512224_begin() -> ~[u64] {
     ];
 }
 
-pub fn sha512256_begin() -> ~[u64] {
+pub fn sha512256_begin() -> Vec<u64> {
     // FIPS-180-4 SS 5.3.3 initial hash value
     // FIPS-180-4 SS 6.2.1.1 initial hash value
-    return ~[
+    return &[
         sha512256_initial_hash[0],
         sha512256_initial_hash[1],
         sha512256_initial_hash[2],
@@ -477,7 +477,7 @@ pub fn sha512256_begin() -> ~[u64] {
 //    }
 //}
 
-pub fn sha512_update(hash: &mut[u64], m: &[u8]) {
+pub fn sha512_update(hash: &mut[u64], m: Vec<u8>) {
     assert!(hash.len() == 8);
     assert!(m.len() == 128);
 
@@ -564,16 +564,16 @@ pub fn sha512_update(hash: &mut[u64], m: &[u8]) {
 
 pub struct SHA224 {
     msg_size: uint,
-    state: ~[u32]
+    state: &[u32]
 }
 
 impl HashAlgorithm for SHA224 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u32::to_be_v(sha224_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u32::to_be_v(self.state).slice_to(self.get_hash_size()).to_owned()
     }
 
@@ -599,11 +599,11 @@ impl HashAlgorithm for SHA224 {
         self.state = sha224_begin();
     }
 
-    fn hash_block(&mut self, msg_block: &[u8]) {
+    fn hash_block(&mut self, msg_block: Vec<u8>) {
         sha256_update(self.state, msg_block);
     }
 
-    fn hash_last_block(&mut self, msg_piece: &[u8]) {
+    fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_be_64(msg_piece, 0x80u8, self.msg_size);
         for block in m.chunks(64) {
             self.hash_block(block);
@@ -611,26 +611,26 @@ impl HashAlgorithm for SHA224 {
     }
 }
 
-pub fn sha224_new() -> ~HashAlgorithm {
-    ~SHA224{ msg_size: 0, state: sha224_begin() } as ~HashAlgorithm
+pub fn sha224_new() -> HashAlgorithm {
+    SHA224{ msg_size: 0, state: sha224_begin() } as HashAlgorithm
 }
 
-pub fn sha224_hash(msg: &[u8]) -> ~[u8] {
+pub fn sha224_hash(msg: Vec<u8>) -> Vec<u8> {
     sha224_new().hash(msg)
 }
 
 pub struct SHA256 {
     msg_size: uint,
-    state: ~[u32]
+    state: &[u32]
 }
 
 impl HashAlgorithm for SHA256 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u32::to_be_v(sha256_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u32::to_be_v(self.state)
     }
 
@@ -656,11 +656,11 @@ impl HashAlgorithm for SHA256 {
         self.state = sha256_begin();
     }
 
-    fn hash_block(&mut self, msg_block: &[u8]) {
+    fn hash_block(&mut self, msg_block: Vec<u8>) {
         sha256_update(self.state, msg_block);
     }
 
-    fn hash_last_block(&mut self, msg_piece: &[u8]) {
+    fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_be_64(msg_piece, 0x80u8, self.msg_size);
         for block in m.chunks(64) {
             self.hash_block(block);
@@ -668,26 +668,26 @@ impl HashAlgorithm for SHA256 {
     }
 }
 
-pub fn sha256_new() -> ~HashAlgorithm {
-    ~SHA256{ msg_size: 0, state: sha256_begin() } as ~HashAlgorithm
+pub fn sha256_new() -> HashAlgorithm {
+    SHA256{ msg_size: 0, state: sha256_begin() } as HashAlgorithm
 }
 
-pub fn sha256_hash(msg: &[u8]) -> ~[u8] {
+pub fn sha256_hash(msg: Vec<u8>) -> Vec<u8> {
     sha256_new().hash(msg)
 }
 
 pub struct SHA384 {
     msg_size: uint,
-    state: ~[u64]
+    state: Vec<u64>
 }
 
 impl HashAlgorithm for SHA384 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u64::to_be_v(sha384_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u64::to_be_v(self.state).slice_to(self.get_hash_size()).to_owned()
     }
 
@@ -713,11 +713,11 @@ impl HashAlgorithm for SHA384 {
         self.state = sha384_begin();
     }
 
-    fn hash_block(&mut self, msg_block: &[u8]) {
+    fn hash_block(&mut self, msg_block: Vec<u8>) {
         sha512_update(self.state, msg_block);
     }
 
-    fn hash_last_block(&mut self, msg_piece: &[u8]) {
+    fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_be_128(msg_piece, 0x80u8, self.msg_size);
         assert!(m.len() == 128);
         for block in m.chunks(128) {
@@ -726,26 +726,26 @@ impl HashAlgorithm for SHA384 {
     }
 }
 
-pub fn sha384_new() -> ~HashAlgorithm {
-    ~SHA384{ msg_size: 0, state: sha384_begin() } as ~HashAlgorithm
+pub fn sha384_new() -> HashAlgorithm {
+    SHA384{ msg_size: 0, state: sha384_begin() } as HashAlgorithm
 }
 
-pub fn sha384_hash(msg: &[u8]) -> ~[u8] {
+pub fn sha384_hash(msg: Vec<u8>) -> Vec<u8> {
     sha384_new().hash(msg)
 }
 
 pub struct SHA512 {
     msg_size: uint,
-    state: ~[u64]
+    state: Vec<u64>
 }
 
 impl HashAlgorithm for SHA512 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u64::to_be_v(sha512_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u64::to_be_v(self.state)
     }
 
@@ -771,11 +771,11 @@ impl HashAlgorithm for SHA512 {
         self.state = sha512_begin();
     }
 
-    fn hash_block(&mut self, msg_block: &[u8]) {
+    fn hash_block(&mut self, msg_block: Vec<u8>) {
         sha512_update(self.state, msg_block);
     }
 
-    fn hash_last_block(&mut self, msg_piece: &[u8]) {
+    fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_be_128(msg_piece, 0x80u8, self.msg_size);
         assert!(m.len() == 128);
         for block in m.chunks(128) {
@@ -784,26 +784,26 @@ impl HashAlgorithm for SHA512 {
     }
 }
 
-pub fn sha512_new() -> ~HashAlgorithm {
-    ~SHA512{ msg_size: 0, state: sha512_begin() } as ~HashAlgorithm
+pub fn sha512_new() -> HashAlgorithm {
+    SHA512{ msg_size: 0, state: sha512_begin() } as HashAlgorithm
 }
 
-pub fn sha512_hash(msg: &[u8]) -> ~[u8] {
+pub fn sha512_hash(msg: Vec<u8>) -> Vec<u8> {
     sha512_new().hash(msg)
 }
 
 pub struct SHA512224 {
     msg_size: uint,
-    state: ~[u64]
+    state: Vec<u64>
 }
 
 impl HashAlgorithm for SHA512224 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u64::to_be_v(sha512224_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u64::to_be_v(self.state).slice_to(self.get_hash_size()).to_owned()
     }
 
@@ -829,11 +829,11 @@ impl HashAlgorithm for SHA512224 {
         self.state = sha512224_begin();
     }
 
-    fn hash_block(&mut self, msg_block: &[u8]) {
+    fn hash_block(&mut self, msg_block: Vec<u8>) {
         sha512_update(self.state, msg_block);
     }
 
-    fn hash_last_block(&mut self, msg_piece: &[u8]) {
+    fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_be_128(msg_piece, 0x80u8, self.msg_size);
         for block in m.chunks(128) {
             self.hash_block(block);
@@ -841,26 +841,26 @@ impl HashAlgorithm for SHA512224 {
     }
 }
 
-pub fn sha512224_new() -> ~HashAlgorithm {
-    ~SHA512224{ msg_size: 0, state: sha512224_begin() } as ~HashAlgorithm
+pub fn sha512224_new() -> HashAlgorithm {
+    SHA512224{ msg_size: 0, state: sha512224_begin() } as HashAlgorithm
 }
 
-pub fn sha512224_hash(msg: &[u8]) -> ~[u8] {
+pub fn sha512224_hash(msg: Vec<u8>) -> Vec<u8> {
     sha512224_new().hash(msg)
 }
 
 pub struct SHA512256 {
     msg_size: uint,
-    state: ~[u64]
+    state: Vec<u64>
 }
 
 impl HashAlgorithm for SHA512256 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u64::to_be_v(sha512256_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u64::to_be_v(self.state).slice_to(self.get_hash_size()).to_owned()
     }
 
@@ -886,11 +886,11 @@ impl HashAlgorithm for SHA512256 {
         self.state = sha512256_begin();
     }
 
-    fn hash_block(&mut self, msg_block: &[u8]) {
+    fn hash_block(&mut self, msg_block: Vec<u8>) {
         sha512_update(self.state, msg_block);
     }
 
-    fn hash_last_block(&mut self, msg_piece: &[u8]) {
+    fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_be_128(msg_piece, 0x80u8, self.msg_size);
         for block in m.chunks(128) {
             self.hash_block(block);
@@ -898,11 +898,11 @@ impl HashAlgorithm for SHA512256 {
     }
 }
 
-pub fn sha512256_new() -> ~HashAlgorithm {
-    ~SHA512256{ msg_size: 0, state: sha512256_begin() } as ~HashAlgorithm
+pub fn sha512256_new() -> HashAlgorithm {
+    SHA512256{ msg_size: 0, state: sha512256_begin() } as HashAlgorithm
 }
 
-pub fn sha512256_hash(msg: &[u8]) -> ~[u8] {
+pub fn sha512256_hash(msg: Vec<u8>) -> Vec<u8> {
     sha512256_new().hash(msg)
 }
 

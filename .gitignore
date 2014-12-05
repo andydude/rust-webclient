@@ -1,3 +1,5 @@
-*~
-.DS_Store
+target
+Cargo.lock
 src/dgst
+.DS_Store
+*~

@@ -22,7 +22,7 @@ pub fn shl(x: u32, y: uint) -> u32 {
 
 
 #[inline]
-pub fn from_le(v: &[u8]) -> u32 {
+pub fn from_le(v: Vec<u8>) -> u32 {
     return v[3] as u32 << 24 
          | v[2] as u32 << 16 
          | v[1] as u32 << 8 
@@ -30,7 +30,7 @@ pub fn from_le(v: &[u8]) -> u32 {
 }
 
 #[inline]
-pub fn from_be(v: &[u8]) -> u32 {
+pub fn from_be(v: Vec<u8>) -> u32 {
     return v[0] as u32 << 24 
          | v[1] as u32 << 16 
          | v[2] as u32 << 8 
@@ -38,24 +38,24 @@ pub fn from_be(v: &[u8]) -> u32 {
 }
 
 #[inline]
-pub fn to_be(x: u32) -> ~[u8] {
-    return ~[((x >> 24)&0xff) as u8,
+pub fn to_be(x: u32) -> Vec<u8> {
+    return &[((x >> 24)&0xff) as u8,
              ((x >> 16)&0xff) as u8,
              ((x >> 8)&0xff) as u8,
              (x&0xff) as u8];
 }
 
 #[inline]
-pub fn to_le(x: u32) -> ~[u8] {
-    return ~[((x)&0xff) as u8,
+pub fn to_le(x: u32) -> Vec<u8> {
+    return &[((x)&0xff) as u8,
              ((x >> 8)&0xff) as u8,
              ((x >> 16)&0xff) as u8,
              ((x >> 24)&0xff) as u8];
 }
 
 #[inline]
-pub fn from_le_v(v: &[u8]) -> ~[u32] {
-    let mut ret = slice::with_capacity(v.len()/4);
+pub fn from_le_v(v: Vec<u8>) -> Vec<u32> {
+    let mut ret = Vec::new();
     for byteslice in v.chunks(4) {
         let word = from_le(byteslice);
         ret.push(word);
@@ -64,8 +64,8 @@ pub fn from_le_v(v: &[u8]) -> ~[u32] {
 }
 
 #[inline]
-pub fn from_be_v(v: &[u8]) -> ~[u32] {
-    let mut ret = slice::with_capacity(v.len()/4);
+pub fn from_be_v(v: Vec<u8>) -> Vec<u32> {
+    let mut ret = Vec::new();
     for byteslice in v.chunks(4) {
         let word = from_be(byteslice);
         ret.push(word);
@@ -74,13 +74,11 @@ pub fn from_be_v(v: &[u8]) -> ~[u32] {
 }
 
 #[inline]
-pub fn to_be_v(x: &[u32]) -> ~[u8] {
-    let mut ret = slice::with_capacity(x.len()*4);
-    for word_i in range(0u, x.len()) {
-        let word = x[word_i];
-        let byteslice = to_be(word);
-        for byte_i in range(0u, 4u) {
-            let byte = byteslice[byte_i];
+pub fn to_be_v(words: Vec<u32>) -> Vec<u8> {
+    let mut ret = Vec::new();
+    for word in words.iter() {
+        let bytes = to_be(word);
+        for byte in bytes.iter() {
             ret.push(byte);
         }
     }
@@ -88,13 +86,11 @@ pub fn to_be_v(x: &[u32]) -> ~[u8] {
 }
 
 #[inline]
-pub fn to_le_v(x: &[u32]) -> ~[u8] {
-    let mut ret = slice::with_capacity(x.len()*4);
-    for word_i in range(0u, x.len()) {
-        let word = x[word_i];
-        let byteslice = to_le(word);
-        for byte_i in range(0u, 4u) {
-            let byte = byteslice[byte_i];
+pub fn to_le_v(words: Vec<u32>) -> Vec<u8> {
+    let mut ret = Vec::new();
+    for word in words.iter() {
+        let bytes = to_le(word);
+        for byte in bytes.iter() {
             ret.push(byte);
         }
     }
@@ -102,15 +98,15 @@ pub fn to_le_v(x: &[u32]) -> ~[u8] {
 }
 
 
-//pub fn bytes_as_le_u32(v: &[u8]) -> u32 {
+//pub fn bytes_as_le_u32(v: Vec<u8>) -> u32 {
 //    return v[3] as u32 << 24 
 //         | v[2] as u32 << 16 
 //         | v[1] as u32 << 8 
 //         | v[0] as u32;
 //}
 //
-//pub fn le_u32_as_bytes(x: u32) -> ~[u8] {
-//    return ~[(x&0xff) as u8,
+//pub fn le_u32_as_bytes(x: u32) -> Vec<u8> {
+//    return &[(x&0xff) as u8,
 //             ((x >> 8)&0xff) as u8,
 //             ((x >> 16)&0xff) as u8,
 //             ((x >> 24)&0xff) as u8];

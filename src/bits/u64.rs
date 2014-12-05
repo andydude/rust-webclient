@@ -1,6 +1,6 @@
 use std::slice;
 
-pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> &[u8] {
     // FIPS-180-4 SS 6.1.1.2 message is padded
     let mut ret = Vec::new();
     for i in range(0, msg.len()) {
@@ -21,8 +21,8 @@ pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
     ret.as_slice().to_owned()
 }
 
-//pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
-//    let mut ret: ~[u8] = msg.clone().to_owned();
+//pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> &[u8] {
+//    let mut ret: &[u8] = msg.clone().to_owned();
 //    slice::append(ret, msg);
 //    slice::append_one(ret, bit);
 //    for _ in range(0, (55 - length) % 64) {
@@ -32,7 +32,7 @@ pub fn pad_le_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
 //    ret
 //}
 
-pub fn pad_be_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+pub fn pad_be_64(msg: &[u8], bit: u8, length: uint) -> &[u8] {
     // FIPS-180-4 SS 6.1.1.2 message is padded
     let mut ret = Vec::new();
     for i in range(0, msg.len()) {
@@ -53,7 +53,7 @@ pub fn pad_be_64(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
     ret.as_slice().to_owned()
 }
 
-pub fn pad_be_128(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+pub fn pad_be_128(msg: &[u8], bit: u8, length: uint) -> &[u8] {
     // FIPS-180-4 SS 6.1.1.2 message is padded
     let mut ret = Vec::new();
     for i in range(0, msg.len()) {
@@ -79,20 +79,20 @@ pub fn pad_be_128(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
     ret.as_slice().to_owned()
 }
 
-//pub fn pad_be_128(msg: &[u8], bit: u8, length: uint) -> ~[u8] {
+//pub fn pad_be_128(msg: &[u8], bit: u8, length: uint) -> &[u8] {
 //    // FIPS-180-4 SS 6.1.1.2 message is padded
 //    let ret = Vec::new();
 //    ret.push_bytes(msg);
 //
 //    // FIPS-180-4 SS 6.2.1.2 message is padded
-//    ret.push_bytes(~[bit]);
+//    ret.push_bytes(&[bit]);
 //    for _ in range(0, (111 - length) % 128) {
-//        ret.push_bytes(~[0u8]);
+//        ret.push_bytes(&[0u8]);
 //    }
 //
 //    // most significant u64 of the u128 size
 //    for _ in range(0u, 8u) {
-//        ret.push_bytes(~[0u8]);
+//        ret.push_bytes(&[0u8]);
 //    }
 //
 //    // least significant u64 of the u128 size
@@ -122,7 +122,7 @@ pub fn shr(x: u64, y: uint) -> u64 {
 }
 
 #[inline]
-pub fn from_be(v: &[u8]) -> u64 {
+pub fn from_be(v: Vec<u8>) -> u64 {
     return v[0] as u64 << 56 
          | v[1] as u64 << 48 
          | v[2] as u64 << 40
@@ -134,7 +134,7 @@ pub fn from_be(v: &[u8]) -> u64 {
 }
 
 #[inline]
-pub fn from_le(v: &[u8]) -> u64 {
+pub fn from_le(v: Vec<u8>) -> u64 {
     return v[7] as u64 << 56 
          | v[6] as u64 << 48 
          | v[5] as u64 << 40
@@ -146,8 +146,8 @@ pub fn from_le(v: &[u8]) -> u64 {
 }
 
 #[inline]
-pub fn to_be(x: u64) -> ~[u8] {
-    return ~[((x >> 56)&0xff) as u8,
+pub fn to_be(x: u64) -> Vec<u8> {
+    return &[((x >> 56)&0xff) as u8,
              ((x >> 48)&0xff) as u8,
              ((x >> 40)&0xff) as u8,
              ((x >> 32)&0xff) as u8,
@@ -158,8 +158,8 @@ pub fn to_be(x: u64) -> ~[u8] {
 }
 
 #[inline]
-pub fn to_le(x: u64) -> ~[u8] {
-    return ~[((x)&0xff) as u8,
+pub fn to_le(x: u64) -> Vec<u8> {
+    return &[((x)&0xff) as u8,
              ((x >> 8)&0xff) as u8,
              ((x >> 16)&0xff) as u8,
              ((x >> 24)&0xff) as u8,
@@ -170,8 +170,8 @@ pub fn to_le(x: u64) -> ~[u8] {
 }
 
 #[inline]
-pub fn from_be_v(v: &[u8]) -> ~[u64] {
-    let mut ret = slice::with_capacity(v.len()/8);
+pub fn from_be_v(v: Vec<u8>) -> Vec<u64> {
+    let mut ret = Vec::new();
     for byteslice in v.chunks(4) {
         let word = from_be(byteslice);
         ret.push(word);
@@ -180,8 +180,8 @@ pub fn from_be_v(v: &[u8]) -> ~[u64] {
 }
 
 #[inline]
-pub fn from_le_v(v: &[u8]) -> ~[u64] {
-    let mut ret = slice::with_capacity(v.len()/8);
+pub fn from_le_v(v: Vec<u8>) -> Vec<u64> {
+    let mut ret = Vec::new();
     for byteslice in v.chunks(4) {
         let word = from_le(byteslice);
         ret.push(word);
@@ -190,8 +190,8 @@ pub fn from_le_v(v: &[u8]) -> ~[u64] {
 }
 
 #[inline]
-pub fn to_be_v(x: &[u64]) -> ~[u8] {
-    let mut ret = slice::with_capacity(x.len()*8);
+pub fn to_be_v(x: Vec<u64>) -> Vec<u8> {
+    let mut ret = Vec::new();
     for word_i in range(0u, x.len()) {
         let word = x[word_i];
         let byteslice = to_be(word);
@@ -204,8 +204,8 @@ pub fn to_be_v(x: &[u64]) -> ~[u8] {
 }
 
 #[inline]
-pub fn to_le_v(x: &[u64]) -> ~[u8] {
-    let mut ret = slice::with_capacity(x.len()*8);
+pub fn to_le_v(x: Vec<u64>) -> Vec<u8> {
+    let mut ret = Vec::new();
     for word_i in range(0u, x.len()) {
         let word = x[word_i];
         let byteslice = to_le(word);

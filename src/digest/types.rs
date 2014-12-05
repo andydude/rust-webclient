@@ -4,15 +4,15 @@ pub trait HashAlgorithm {
     // must impl
 	fn clear(&mut self);
     fn get_block_size(&self) -> uint;
-    fn get_hash(&self) -> ~[u8];
+    fn get_hash(&self) -> &[u8];
     fn get_hash_size(&self) -> uint;
-    fn get_iv(&self) -> ~[u8];
+    fn get_iv(&self) -> &[u8];
     fn get_message_size(&self) -> uint;
     fn set_message_size(&mut self, msg_size: uint);
 	fn hash_block(&mut self, msg_block: &[u8]);
 	fn hash_last_block(&mut self, msg_piece: &[u8]);
 
-    fn hash(&mut self, msg: &[u8]) -> ~[u8] {
+    fn hash(&mut self, msg: &[u8]) -> &[u8] {
         self.clear();
 
         let mut last_block: &[u8] = [];
@@ -46,8 +46,8 @@ pub trait HashAlgorithm {
 	//fn get_input_block_size();
 	//fn get_output_block_size();
 
-	//fn get_hash(&self) -> ~[u8];
-    //fn get_iv(&self) -> ~[u8];
+	//fn get_hash(&self) -> &[u8];
+    //fn get_iv(&self) -> &[u8];
     //fn set_iv(&self, iv: &[u8]);
 
 	//fn clear(&self);
@@ -69,8 +69,8 @@ pub trait HashAlgorithm {
 //}
 
 //struct HashContext {
-//	init_value: ~[u8],
-//	hash_value: ~mut [u8],
+//	init_value: &[u8],
+//	hash_value: &mut [u8],
 //	block_size: uint,
 //	padding_mode: PaddingMode,
 //}

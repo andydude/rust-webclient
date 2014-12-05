@@ -83,9 +83,9 @@ pub static md5_shift_amounts: [uint, .. 64] = [
     6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 ];
 
-pub fn md5_begin() -> ~[u32] {
+pub fn md5_begin() -> Vec<u8> {
     // FIPS-180-4 SS 6.1.1.1 initial hash value
-    return ~[
+    return &[
         md5_initial_hash[0],
         md5_initial_hash[1],
         md5_initial_hash[2],
@@ -93,7 +93,7 @@ pub fn md5_begin() -> ~[u32] {
     ];
 }
 
-pub fn md5_update(hash: &mut[u32], m: &[u8]) {
+pub fn md5_update(hash: &mut[u32], m: Vec<u8>) {
     assert!(hash.len() == 4);
     assert!(m.len() == 64);
 
@@ -162,16 +162,16 @@ pub fn md5_update(hash: &mut[u32], m: &[u8]) {
 
 pub struct MD5 {
     msg_size: uint,
-	state: ~[u32]
+	state: Vec<u8>
 }
 
 impl HashAlgorithm for MD5 {
 
-    fn get_iv(&self) -> ~[u8] {
+    fn get_iv(&self) -> Vec<u8> {
         u32::to_le_v(md5_begin())
     }
 
-    fn get_hash(&self) -> ~[u8] {
+    fn get_hash(&self) -> Vec<u8> {
         u32::to_le_v(self.state)
     }
 
@@ -197,11 +197,11 @@ impl HashAlgorithm for MD5 {
         self.state = md5_begin();
     }
 
-	fn hash_block(&mut self, msg_block: &[u8]) {
+	fn hash_block(&mut self, msg_block: Vec<u8>) {
         md5_update(self.state, msg_block);
     }
 
-	fn hash_last_block(&mut self, msg_piece: &[u8]) {
+	fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
         let m = u64::pad_le_64(msg_piece, 0x80u8, self.msg_size);
         for block in m.chunks(64) {
             self.hash_block(block);
@@ -209,10 +209,10 @@ impl HashAlgorithm for MD5 {
     }
 }
 
-pub fn md5_new() -> ~HashAlgorithm {
-    ~MD5{ msg_size: 0, state: md5_begin() } as ~HashAlgorithm
+pub fn md5_new() -> HashAlgorithm {
+    MD5{ msg_size: 0, state: md5_begin() } as HashAlgorithm
 }
 
-pub fn md5_hash(msg: &[u8]) -> ~[u8] {
+pub fn md5_hash(msg: Vec<u8>) -> Vec<u8> {
     md5_new().hash(msg)
 }
