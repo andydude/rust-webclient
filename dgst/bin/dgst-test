@@ -1,0 +1,36 @@
+#!/bin/bash
+
+ECHO=/bin/echo
+OPENSSL_DGST="openssl dgst"
+RUSTSSL_DGST="./dgst"
+
+IN="$1"
+
+function printpad () {
+    PAD=$(printf '%0.1s' " "{1..40})
+    PADLENGTH=20
+    printf '%s' "$1"
+    printf '%*.*s' 0 $((PADLENGTH - ${#1})) "$PAD"
+}
+
+echo "$1" | xxd
+
+for MODE in -md5 -sha1 -sha224 -sha256 -sha384 -sha512 -sha512256 -sha512224; do
+    case $MODE in
+      (-sha512224)
+        OPENSSL_OUT=$(perl -mDigest::SHA -e'print Digest::SHA::sha512224_hex("'"$IN"'"); print "\n";');;
+      (-sha512256)
+        OPENSSL_OUT=$(perl -mDigest::SHA -e'print Digest::SHA::sha512256_hex("'"$IN"'"); print "\n";');;
+      (*)
+        OPENSSL_OUT=$($ECHO -n "$IN" | $OPENSSL_DGST $MODE | cut -d'=' -f2 | cut -d' ' -f2);;
+    esac
+    
+    RUSTSSL_OUT=$($ECHO -n "$IN" | $RUSTSSL_DGST $MODE)
+    if [ x"$RUSTSSL_OUT" = x"$OPENSSL_OUT" ]; then
+        printpad "[PASS] $MODE"
+        printf "'$IN' '$RUSTSSL_OUT'\n"
+    else
+        printpad "[FAIL] $MODE"
+        printf "'$IN'\n\tgot '$RUSTSSL_OUT'\n\tbut '$OPENSSL_OUT' was expected\n"
+    fi
+done

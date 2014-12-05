@@ -1,0 +1,5 @@
+[package]
+
+name = "webclient"
+version = "0.0.1"
+authors = ["Andrew Robbins <and_j_rob@yahoo.com>"]
