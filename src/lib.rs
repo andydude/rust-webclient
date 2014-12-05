@@ -1,7 +1,7 @@
 #![crate_type = "rlib"]
 #![crate_type = "dylib"]
 
-#[path = "."]
+//#[path = "."]
 pub mod webclient {
     pub mod bits;
     pub mod digest;
