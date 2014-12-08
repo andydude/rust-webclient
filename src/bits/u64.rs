@@ -169,7 +169,7 @@ pub fn to_le(x: u64) -> Vec<u8> {
 }
 
 #[inline]
-pub fn from_be_v(v: Vec<u8>) -> Vec<u64> {
+pub fn from_be_v(v: &[u8]) -> Vec<u64> {
     let mut ret = Vec::new();
     for bytes in v.chunks(4) {
         let word = from_be(bytes);
@@ -179,7 +179,7 @@ pub fn from_be_v(v: Vec<u8>) -> Vec<u64> {
 }
 
 #[inline]
-pub fn from_le_v(v: Vec<u8>) -> Vec<u64> {
+pub fn from_le_v(v: &[u8]) -> Vec<u64> {
     let mut ret = Vec::new();
     for bytes in v.chunks(4) {
         let word = from_le(bytes);
@@ -189,11 +189,11 @@ pub fn from_le_v(v: Vec<u8>) -> Vec<u64> {
 }
 
 #[inline]
-pub fn to_be_v(x: Vec<u64>) -> Vec<u8> {
+pub fn to_be_v(x: &[u64]) -> Vec<u8> {
     let mut ret = Vec::new();
     for word in x.iter() {
-        let byteslice = to_be(*word);
-        for byte in byteslice.iter() {
+        let bytes = to_be(*word);
+        for byte in bytes.iter() {
             ret.push(*byte);
         }
     }
@@ -201,11 +201,11 @@ pub fn to_be_v(x: Vec<u64>) -> Vec<u8> {
 }
 
 #[inline]
-pub fn to_le_v(x: Vec<u64>) -> Vec<u8> {
+pub fn to_le_v(x: &[u64]) -> Vec<u8> {
     let mut ret = Vec::new();
     for word in x.iter() {
-        let byteslice = to_le(*word);
-        for byte in byteslice.iter() {
+        let bytes = to_le(*word);
+        for byte in bytes.iter() {
             ret.push(*byte);
         }
     }

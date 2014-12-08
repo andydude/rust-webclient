@@ -318,7 +318,7 @@ pub fn sha256_update(hash: &mut Vec<u32>, w: &mut Vec<u32>, m: Vec<u8>) {
     // FIPS-180-4 SS 4.2.2 constants
     // FIPS-180-4 SS 6.1.2.3
     for t in range(0u, 64u) {
-        temp1 = h + sha256_sigma1(e) + u32::bool3ary_202(e, f, g) + sha256_constant_pool[t] + w[t];
+        temp1 = h + sha256_sigma1(e) + u32::bool3ary_202(e, f, g) + SHA256_CONSTANT_POOL[t] + w[t];
         temp2 = sha256_sigma0(a) + u32::bool3ary_232(a, b, c);
         h = g; g = f; f = e; e = d + temp1; d = c; c = b; b = a;
         a = temp1 + temp2;
@@ -520,7 +520,7 @@ pub fn sha512_update(hash: &mut Vec<u64>, w: &mut Vec<u64>, m: Vec<u8>) {
     // FIPS-180-4 SS 4.2.2 constants
     // FIPS-180-4 SS 6.1.2.3
     for t in range(0u, 80u) {
-        temp1 = h + sha512_sigma1(e) + u64::bool3ary_202(e, f, g) + sha512_constant_pool[t] + w[t];
+        temp1 = h + sha512_sigma1(e) + u64::bool3ary_202(e, f, g) + SHA512_CONSTANT_POOL[t] + w[t];
         temp2 = sha512_sigma0(a) + u64::bool3ary_232(a, b, c);
         h = g; g = f; f = e; e = d + temp1; d = c; c = b; b = a;
         a = temp1 + temp2;
@@ -612,7 +612,7 @@ pub struct SHA256 {
 impl HashAlgorithm for SHA256 {
 
     fn get_hash(&self) -> Vec<u8> {
-        u32::to_be_v(self.state)
+        u32::to_be_v(self.hash_state.as_slice())
     }
 
     #[inline]
@@ -783,10 +783,6 @@ pub struct SHA512224 {
 
 impl HashAlgorithm for SHA512224 {
 
-    fn get_iv(&self) -> Vec<u8> {
-        u64::to_be_v(sha512224_begin())
-    }
-
     fn get_hash(&self) -> Vec<u8> {
         u64::to_be_v(self.hash_state.as_slice())
             .slice_to(self.get_hash_size()).to_vec()
@@ -845,10 +841,6 @@ pub struct SHA512256 {
 
 impl HashAlgorithm for SHA512256 {
 
-    fn get_iv(&self) -> Vec<u8> {
-        u64::to_be_v(sha512256_begin())
-    }
-
     fn get_hash(&self) -> Vec<u8> {
         u64::to_be_v(self.hash_state.as_slice())
             .slice_to(self.get_hash_size()).to_vec()
@@ -878,7 +870,7 @@ impl HashAlgorithm for SHA512256 {
     }
 
     fn hash_block(&mut self, msg_block: Vec<u8>) {
-        sha1_update(&mut self.hash_state, &mut self.work_state, msg_block);
+        sha512_update(&mut self.hash_state, &mut self.work_state, msg_block);
     }
 
     fn hash_last_block(&mut self, msg_piece: Vec<u8>) {
