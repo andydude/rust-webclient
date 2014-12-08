@@ -1,5 +1,9 @@
 [package]
-
 name = "webclient"
 version = "0.0.1"
 authors = ["Andrew Robbins <and_j_rob@yahoo.com>"]
+
+[lib]
+name = "webclient"
+path = "src/lib.rs"
+crate-type = ["dylib", "rlib"]

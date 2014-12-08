@@ -1,6 +1,6 @@
-use webclient::bits::u32;
-use webclient::bits::u64;
-use webclient::digest::types::HashAlgorithm;
+use bits::u32;
+use bits::u64;
+use digest::types::HashAlgorithm;
 
 //
 // BEGIN constants

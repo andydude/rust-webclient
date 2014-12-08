@@ -1,6 +1,6 @@
-use webclient::bits::u32;
-use webclient::bits::u64;
-use webclient::digest::types::HashAlgorithm;
+use bits::u32;
+use bits::u64;
+use digest::types::HashAlgorithm;
 
 pub static MD5_CONSTANT_POOL: [u32, .. 64] = [
     0xd76aa478u32, // digits of floor(abs(sin(1))*2^32)
